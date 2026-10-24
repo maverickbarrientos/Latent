@@ -1,0 +1,78 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Latent is dark-only: palette is background #0E1628, surface #17223B, text #E7ECF7, accent #6C8CFF. */
+:root {
+  --background: #0f1115;
+  --foreground: #e7ecf7;
+  --card: #171a21;
+  --card-foreground: #e7ecf7;
+  --popover: #171a21;
+  --popover-foreground: #e7ecf7;
+  --primary: #6c8cff;
+  --primary-foreground: #0f1115;
+  --secondary: #22262f;
+  --secondary-foreground: #e7ecf7;
+  --muted: #22262f;
+  --muted-foreground: #a3acbd;
+  --accent: #22262f;
+  --accent-foreground: #e7ecf7;
+  --destructive: #f87171;
+  --border: #2a2f3a;
+  --input: #2a2f3a;
+  --ring: #6c8cff;
+  --success: #4ade80;
+  --upload: #2dd4bf;
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-upload: var(--upload);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Geist Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  [data-slot="card"] {
+    @apply border-border shadow-none;
+  }
+  ::selection {
+    background: rgb(108 140 255 / 0.35);
+  }
+}
