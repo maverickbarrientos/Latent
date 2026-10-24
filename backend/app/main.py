@@ -1,14 +1,31 @@
+import os
 from collections import defaultdict
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import network, storage
 from .models import Settings, TestResult
 
+# Read backend/.env for every way of starting the app (python -m app.main or uvicorn app.main:app).
+load_dotenv()
+
 app = FastAPI(title="Latent")
 STATIC_DIR = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
+# Origins allowed to call the API from a browser when the UI is hosted elsewhere.
+# Comma-separated; "*" allows any origin. Empty means same-origin only.
+CORS_ORIGINS = [o.strip().rstrip("/") for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+if CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=CORS_ORIGINS,
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["Content-Type"],
+    )
 
 
 @app.get("/api/network")
@@ -87,10 +104,6 @@ else:
 
 
 if __name__ == "__main__":
-    import os
-
     import uvicorn
-    from dotenv import load_dotenv
 
-    load_dotenv()
     uvicorn.run(app, host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", 8000)))

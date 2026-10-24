@@ -20,4 +20,4 @@ Run the API (`python -m app.main` in `backend/`), then in `frontend/` run `npm r
 
 ## Hosting the UI separately from the API
 
-By default the UI calls the API on the same origin. If they are hosted apart, set `VITE_API_URL` (for example `https://your-backend.onrender.com`) in `frontend/.env` or in your host's environment settings, then rebuild: it is read at build time. The backend must also allow requests from the UI's origin (CORS), which it does not do yet.
+By default the UI calls the API on the same origin. If they are hosted apart, set `VITE_API_URL` (for example `https://your-backend.onrender.com`) in `frontend/.env` or in your host's environment settings, then rebuild: it is read at build time. The backend must also allow the UI's origin: set `CORS_ORIGINS` on the backend (for example `https://your-ui.example.com`; several can be comma-separated) in `backend/.env` or your host's environment settings. Leave it empty when the backend serves the UI itself.
