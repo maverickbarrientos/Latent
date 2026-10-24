@@ -19,7 +19,7 @@ type Props = {
 export function Dashboard({ history, stats, network, onRun, onViewHistory }: Props) {
   const last = history[history.length - 1]
   const recent = [...history].reverse().slice(0, 5)
-  const details = [network?.ip, network?.isp].filter(Boolean).join("  ·  ")
+  const details = [network?.ip, network?.kind === "ssid" ? network.isp : undefined].filter(Boolean).join("  ·  ")
 
   const summary = [
     { label: "Average", down: stats.avg_download, up: stats.avg_upload },
@@ -33,7 +33,7 @@ export function Dashboard({ history, stats, network, onRun, onViewHistory }: Pro
         <div className="min-w-0">
           <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wider uppercase">
             <span className="bg-success size-1.5 rounded-full" />
-            Connected to
+            {network?.kind === "isp" ? "Connected via" : "Connected to"}
           </div>
           <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight">{network?.ssid ?? "Detecting…"}</h1>
           <p className="text-muted-foreground mt-1 truncate font-mono text-xs">

@@ -10,7 +10,8 @@ export type TestResult = {
 
 export type Settings = { min_download: number; min_upload: number; max_ping: number }
 
-export type NetworkInfo = { ssid: string; ip: string; isp: string }
+// kind "isp" means the name is the visitor's ISP: a browser cannot reveal a Wi-Fi name.
+export type NetworkInfo = { ssid: string; kind: "ssid" | "isp"; ip: string; isp: string }
 
 export type NetworkStats = {
   network: string

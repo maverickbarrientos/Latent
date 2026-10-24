@@ -50,7 +50,7 @@ export function SidebarContent({ view, onSelect, network, offline }: Props) {
       <div className="border-border mt-auto border-t px-3 pt-3">
         <div className="text-muted-foreground flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase">
           <span className={cn("size-1.5 shrink-0 rounded-full", offline ? "bg-destructive" : "bg-success")} />
-          {offline ? "Server offline" : "Connected to"}
+          {offline ? "Server offline" : network?.kind === "isp" ? "Connected via" : "Connected to"}
         </div>
         {!offline && <div className="mt-1 truncate text-sm font-medium">{network?.ssid ?? "Detecting…"}</div>}
       </div>

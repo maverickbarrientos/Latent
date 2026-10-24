@@ -3,7 +3,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -27,8 +27,8 @@ app.add_middleware(
 
 
 @app.get("/api/network")
-def get_network():
-    return {"ssid": network.get_ssid(), **network.get_ip_info()}
+def get_network(request: Request):
+    return network.describe(network.client_ip(request))
 
 
 @app.get("/api/history")
