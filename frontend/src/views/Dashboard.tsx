@@ -19,7 +19,7 @@ type Props = {
 export function Dashboard({ history, stats, network, onRun, onViewHistory }: Props) {
   const last = history[history.length - 1]
   const recent = [...history].reverse().slice(0, 5)
-  const details = [network?.ip, network?.kind === "ssid" ? network.isp : undefined].filter(Boolean).join("  ·  ")
+  const details = [network?.ip, network?.isp].filter(Boolean).join("  ·  ")
 
   const summary = [
     { label: "Average", down: stats.avg_download, up: stats.avg_upload },
