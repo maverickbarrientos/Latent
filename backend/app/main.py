@@ -76,7 +76,14 @@ def put_settings(settings: Settings):
     return settings
 
 
-app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+# The UI is only served when it has been built; otherwise run as a plain API.
+if STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+else:
+
+    @app.get("/")
+    def root():
+        return {"name": "Latent API", "ui": "not built"}
 
 
 if __name__ == "__main__":
