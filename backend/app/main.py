@@ -18,14 +18,12 @@ STATIC_DIR = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
 # Origins allowed to call the API from a browser when the UI is hosted elsewhere.
 # Comma-separated; "*" allows any origin. Empty means same-origin only.
-CORS_ORIGINS = [o.strip().rstrip("/") for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
-if CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
-        allow_headers=["Content-Type"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.get("/api/network")
