@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Activity, Gauge, History as HistoryIcon, LayoutDashboard, Settings as SettingsIcon, Wifi } from "lucide-react"
+import { Gauge, History as HistoryIcon, LayoutDashboard, Settings as SettingsIcon, Wifi } from "lucide-react"
 import { useData } from "@/hooks/useData"
 import { useSpeedTest } from "@/hooks/useSpeedTest"
 import { api, breaches, type Settings, type TestResult } from "@/lib/api"
@@ -78,8 +78,8 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="border-border bg-background flex shrink-0 flex-col gap-5 border-b p-3 md:w-52 md:border-r md:border-b-0 md:p-4">
-        <div className="flex items-center gap-2 px-3 pt-1">
-          <Activity className="text-primary size-4" />
+        <div className="flex items-center gap-1 px-1">
+          <img src="/latent.png" alt="" className="size-10" />
           <span className="text-base font-semibold tracking-tight">Latent</span>
         </div>
 
