@@ -14,9 +14,10 @@ type Props = {
   network: NetworkInfo | null
   onRun: () => void
   onViewHistory: () => void
+  onSetName: () => void
 }
 
-export function Dashboard({ history, stats, network, onRun, onViewHistory }: Props) {
+export function Dashboard({ history, stats, network, onRun, onViewHistory, onSetName }: Props) {
   const last = history[history.length - 1]
   const recent = [...history].reverse().slice(0, 5)
   const details = [network?.ip, network?.isp].filter(Boolean).join("  ·  ")
@@ -40,6 +41,11 @@ export function Dashboard({ history, stats, network, onRun, onViewHistory }: Pro
             {[details, last && `Tested ${formatAgo(last.timestamp)}`].filter(Boolean).join("  ·  ") ||
               "Run your first test to get started"}
           </p>
+          {network?.kind === "isp" && (
+            <button onClick={onSetName} className="text-primary mt-1 text-xs font-medium hover:underline">
+              Set your Wi-Fi name
+            </button>
+          )}
         </div>
         <Button onClick={onRun} className="shrink-0 font-semibold">
           <Play /> Run test

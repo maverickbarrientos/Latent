@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Menu } from "lucide-react"
 import { Logo, NAV, SidebarContent, type View } from "@/components/Sidebar"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useData } from "@/hooks/useData"
+import { useNetworkName } from "@/hooks/useNetworkName"
 import { useSpeedTest } from "@/hooks/useSpeedTest"
 import { api, breaches, type Settings, type TestResult } from "@/lib/api"
+import { withName } from "@/lib/network"
 import { cn } from "@/lib/utils"
 import { Dashboard } from "@/views/Dashboard"
 import { History } from "@/views/History"
@@ -24,10 +26,16 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { history, stats, network, settings, setSettings, offline, refresh, refreshNetwork } = useData()
 
+  const [manualName, saveManualName] = useNetworkName()
+  // The backend can't see a visitor's Wi-Fi name; fall back to the one typed in Settings.
+  const displayNetwork = useMemo(() => withName(network, manualName), [network, manualName])
+
   const settingsRef = useRef(settings)
+  const manualNameRef = useRef(manualName)
   useEffect(() => {
     settingsRef.current = settings
-  }, [settings])
+    manualNameRef.current = manualName
+  }, [settings, manualName])
 
   useEffect(() => {
     if (!toast) return
@@ -35,7 +43,10 @@ export default function App() {
     return () => clearTimeout(id)
   }, [toast])
 
-  const getNetwork = useCallback(async () => (await refreshNetwork())?.ssid ?? "Unknown", [refreshNetwork])
+  const getNetwork = useCallback(
+    async () => withName(await refreshNetwork(), manualNameRef.current)?.ssid ?? "Unknown",
+    [refreshNetwork],
+  )
 
   const onSaved = useCallback(
     (r: TestResult) => {
@@ -69,13 +80,18 @@ export default function App() {
     setToast({ message: "Settings saved", tone: "ok" })
   }
 
+  const saveNetworkName = (name: string) => {
+    saveManualName(name)
+    setToast({ message: name.trim() ? "Wi-Fi name saved" : "Wi-Fi name cleared", tone: "ok" })
+  }
+
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="border-border bg-background sticky top-0 hidden h-screen w-52 shrink-0 flex-col gap-5 border-r p-4 md:flex">
         <div className="px-1">
           <Logo />
         </div>
-        <SidebarContent view={view} onSelect={setView} network={network} offline={offline} />
+        <SidebarContent view={view} onSelect={setView} network={displayNetwork} offline={offline} />
       </aside>
 
       <header className="border-border bg-background sticky top-0 z-30 flex h-14 items-center justify-between border-b px-4 md:hidden">
@@ -98,17 +114,24 @@ export default function App() {
               setView(v)
               setMenuOpen(false)
             }}
-            network={network}
+            network={displayNetwork}
             offline={offline}
           />
         </SheetContent>
       </Sheet>
 
       <main className="w-full min-w-0 flex-1 p-4 md:px-6 md:py-6">
-        {view === "dashboard" && <Dashboard history={history} stats={stats} network={network} onRun={runTest} onViewHistory={() => setView("history")} />}
+        {view === "dashboard" && <Dashboard
+            history={history}
+            stats={stats}
+            network={displayNetwork}
+            onRun={runTest}
+            onViewHistory={() => setView("history")}
+            onSetName={() => setView("settings")}
+          />}
         {view === "test" && (
           <SpeedTest
-            network={network?.ssid}
+            network={displayNetwork?.ssid}
             phase={speedTest.phase}
             value={speedTest.value}
             result={speedTest.result}
@@ -118,8 +141,17 @@ export default function App() {
           />
         )}
         {view === "history" && <History history={history} settings={settings} onClear={clearHistory} />}
-        {view === "networks" && <Networks stats={stats} current={network?.ssid} />}
-        {view === "settings" && <SettingsView key={JSON.stringify(settings)} settings={settings} onSave={saveSettings} />}
+        {view === "networks" && <Networks stats={stats} current={displayNetwork?.ssid} />}
+        {view === "settings" && (
+          <SettingsView
+            key={JSON.stringify(settings)}
+            settings={settings}
+            onSave={saveSettings}
+            networkName={manualName}
+            detected={network}
+            onSaveNetworkName={saveNetworkName}
+          />
+        )}
       </main>
 
       {toast && (
