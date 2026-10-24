@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Gauge, History as HistoryIcon, LayoutDashboard, Settings as SettingsIcon, Wifi } from "lucide-react"
+import { Menu } from "lucide-react"
+import { Logo, NAV, SidebarContent, type View } from "@/components/Sidebar"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useData } from "@/hooks/useData"
 import { useSpeedTest } from "@/hooks/useSpeedTest"
 import { api, breaches, type Settings, type TestResult } from "@/lib/api"
@@ -10,16 +13,6 @@ import { Networks } from "@/views/Networks"
 import { SettingsView } from "@/views/SettingsView"
 import { SpeedTest } from "@/views/SpeedTest"
 
-type View = "dashboard" | "test" | "history" | "networks" | "settings"
-
-const NAV: { id: View; label: string; icon: typeof Gauge }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "test", label: "Speed Test", icon: Gauge },
-  { id: "history", label: "History", icon: HistoryIcon },
-  { id: "networks", label: "Networks", icon: Wifi },
-  { id: "settings", label: "Settings", icon: SettingsIcon },
-]
-
 type Toast = { message: string; tone: "ok" | "warn" }
 
 export default function App() {
@@ -28,6 +21,7 @@ export default function App() {
     return NAV.some((n) => n.id === id) ? (id as View) : "dashboard"
   })
   const [toast, setToast] = useState<Toast | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { history, stats, network, settings, setSettings, offline, refresh, refreshNetwork } = useData()
 
   const settingsRef = useRef(settings)
@@ -77,37 +71,38 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="border-border bg-background flex shrink-0 flex-col gap-5 border-b p-3 md:w-52 md:border-r md:border-b-0 md:p-4">
-        <div className="flex items-center gap-1 px-1">
-          <img src="/latent.png" alt="" className="size-10" />
-          <span className="text-base font-semibold tracking-tight">Latent</span>
+      <aside className="border-border bg-background sticky top-0 hidden h-screen w-52 shrink-0 flex-col gap-5 border-r p-4 md:flex">
+        <div className="px-1">
+          <Logo />
         </div>
-
-        <nav className="flex gap-1 overflow-x-auto md:flex-col">
-          {NAV.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setView(id)}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
-                view === id
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Icon className="size-4" /> {label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="border-border mt-auto hidden border-t px-3 pt-3 md:block">
-          <div className="text-muted-foreground flex items-center gap-2 text-[11px] font-medium tracking-wider uppercase">
-            <span className={cn("size-1.5 shrink-0 rounded-full", offline ? "bg-destructive" : "bg-success")} />
-            {offline ? "Server offline" : "Connected to"}
-          </div>
-          {!offline && <div className="mt-1 truncate text-sm font-medium">{network?.ssid ?? "Detecting…"}</div>}
-        </div>
+        <SidebarContent view={view} onSelect={setView} network={network} offline={offline} />
       </aside>
+
+      <header className="border-border bg-background sticky top-0 z-30 flex h-14 items-center justify-between border-b px-4 md:hidden">
+        <Logo />
+        <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+          <Menu className="size-5" />
+        </Button>
+      </header>
+
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="left" className="bg-background flex w-64 flex-col gap-5 p-4 md:hidden">
+          <SheetHeader className="p-0">
+            <SheetTitle className="sr-only">Menu</SheetTitle>
+            <SheetDescription className="sr-only">Navigate between pages</SheetDescription>
+            <Logo />
+          </SheetHeader>
+          <SidebarContent
+            view={view}
+            onSelect={(v) => {
+              setView(v)
+              setMenuOpen(false)
+            }}
+            network={network}
+            offline={offline}
+          />
+        </SheetContent>
+      </Sheet>
 
       <main className="w-full min-w-0 flex-1 p-4 md:px-6 md:py-6">
         {view === "dashboard" && <Dashboard history={history} stats={stats} network={network} onRun={runTest} onViewHistory={() => setView("history")} />}

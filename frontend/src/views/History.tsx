@@ -27,24 +27,30 @@ export function History({ history, settings, onClear }: Props) {
           <TableHeader>
             <TableRow>
               <TableHead className="pl-5">Time</TableHead>
-              <TableHead>Network</TableHead>
-              <TableHead className="text-right">Down</TableHead>
-              <TableHead className="text-right">Up</TableHead>
-              <TableHead className="pr-5 text-right">Ping</TableHead>
+              <TableHead className="hidden sm:table-cell">Network</TableHead>
+              <TableHead className="text-right">Down<span className="hidden sm:inline"> (Mbps)</span></TableHead>
+              <TableHead className="text-right">Up<span className="hidden sm:inline"> (Mbps)</span></TableHead>
+              <TableHead className="pr-5 text-right">Ping<span className="hidden sm:inline"> (ms)</span></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.timestamp}>
-                <TableCell className="pl-5">{formatWhen(r.timestamp)}</TableCell>
-                <TableCell>{r.network}</TableCell>
-                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(r.download)} Mbps</TableCell>
-                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(r.upload)} Mbps</TableCell>
+                <TableCell className="pl-5">
+                  <div>{formatWhen(r.timestamp)}</div>
+                  <div className="text-muted-foreground text-xs sm:hidden">
+                    {r.network}
+                    {breaches(r, settings).length > 0 && <span className="text-destructive"> · Below limit</span>}
+                  </div>
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">{r.network}</TableCell>
+                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(r.download)}</TableCell>
+                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(r.upload)}</TableCell>
                 <TableCell className="pr-5 text-right font-mono text-[13px] tabular-nums">
                   {breaches(r, settings).length > 0 && (
-                    <Badge variant="outline" className="border-destructive/40 text-destructive mr-2">Below limit</Badge>
+                    <Badge variant="outline" className="border-destructive/40 text-destructive mr-2 hidden sm:inline-flex">Below limit</Badge>
                   )}
-                  {fmt(r.ping)} ms
+                  {fmt(r.ping)}
                 </TableCell>
               </TableRow>
             ))}

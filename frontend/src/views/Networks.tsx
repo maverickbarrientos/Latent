@@ -14,7 +14,7 @@ export function Networks({ stats, current }: { stats: Stats; current?: string })
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Average speed by network</CardTitle>
+          <CardTitle className="text-base">Average speed by network (Mbps)</CardTitle>
         </CardHeader>
         <CardContent>
           <NetworkChart networks={stats.networks} />
@@ -26,10 +26,10 @@ export function Networks({ stats, current }: { stats: Stats; current?: string })
           <TableHeader>
             <TableRow>
               <TableHead className="pl-5">Network</TableHead>
-              <TableHead className="text-right">Tests</TableHead>
-              <TableHead className="text-right">Avg down</TableHead>
-              <TableHead className="text-right">Avg up</TableHead>
-              <TableHead className="pr-5 text-right">Avg ping</TableHead>
+              <TableHead className="hidden text-right sm:table-cell">Tests</TableHead>
+              <TableHead className="text-right">Down<span className="hidden sm:inline"> (Mbps)</span></TableHead>
+              <TableHead className="text-right">Up<span className="hidden sm:inline"> (Mbps)</span></TableHead>
+              <TableHead className="pr-5 text-right">Ping<span className="hidden sm:inline"> (ms)</span></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -38,11 +38,12 @@ export function Networks({ stats, current }: { stats: Stats; current?: string })
                 <TableCell className="pl-5 font-medium">
                   {n.network}
                   {n.network === current && <Badge variant="outline" className="border-success/40 text-success ml-2">Connected</Badge>}
+                  <div className="text-muted-foreground text-xs font-normal sm:hidden">{n.count} tests</div>
                 </TableCell>
-                <TableCell className="text-right font-mono text-[13px] tabular-nums">{n.count}</TableCell>
-                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_download)} Mbps</TableCell>
-                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_upload)} Mbps</TableCell>
-                <TableCell className="pr-5 text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_ping)} ms</TableCell>
+                <TableCell className="hidden text-right font-mono text-[13px] tabular-nums sm:table-cell">{n.count}</TableCell>
+                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_download)}</TableCell>
+                <TableCell className="text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_upload)}</TableCell>
+                <TableCell className="pr-5 text-right font-mono text-[13px] tabular-nums">{fmt(n.avg_ping)}</TableCell>
               </TableRow>
             ))}
             {!stats.networks.length && (
