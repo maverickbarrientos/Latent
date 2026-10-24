@@ -17,3 +17,7 @@ Open http://localhost:8000. To change the host or port, copy `backend/.env.examp
 ## Develop the UI
 
 Run the API (`python -m app.main` in `backend/`), then in `frontend/` run `npm run dev`. Vite proxies `/api` to the backend. If the API isn't on `127.0.0.1:8000`, copy `frontend/.env.example` to `frontend/.env` and set `API_URL` (and `DEV_PORT`) there.
+
+## Hosting the UI separately from the API
+
+By default the UI calls the API on the same origin. If they are hosted apart, set `VITE_API_URL` (for example `https://your-backend.onrender.com`) in `frontend/.env` or in your host's environment settings, then rebuild: it is read at build time. The backend must also allow requests from the UI's origin (CORS), which it does not do yet.

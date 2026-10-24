@@ -31,8 +31,11 @@ export type Stats = {
   networks: NetworkStats[]
 }
 
+// Empty means same origin: the backend serves the UI, or the dev server proxies /api.
+const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "")
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api/${path}`, init)
+  const res = await fetch(`${API_BASE}/api/${path}`, init)
   if (!res.ok) throw new Error(`Request failed: ${path}`)
   return res.json()
 }
